@@ -40,7 +40,7 @@ def get_credit_total(borrower_wallet_address: str) -> int:
     
     # Connect to the TribeCredit smart contract and retrieve the credit limit.
     tribe_credit = web3.eth.contract(address=config.tribe_credit_address, abi=config.tribe_credit_abi)
-    credit_limit = tribe_credit.functions.get_credit_total(borrower_wallet_address).call()
+    credit_limit = tribe_credit.functions.tribeDetails(borrower_wallet_address).call()
     
     # Calculate the underwrite amount based on the credit limit and return it.
     underwrite_amount = min(credit_limit * 0.2, 10000)
@@ -61,6 +61,16 @@ def underwrite(huma_pool, **kwargs):
     borrower_wallet_address = kwargs["borrowerWalletAddress"]
     underwrite_amount = get_credit_total(borrower_wallet_address)
 
+    # 
+    
+    # # Creating a result dictionary based on the calculated underwrite amount.
+    # result = {
+    #     "creditLimit": int(underwrite_amount),
+    #     "intervalInDays": 30,
+    #     "remainingPeriods": 12,
+    #     "aprInBps": 0
+    # }
+
     signal_names = [
         "TribeCredit.credit_total",
         "TribeCredit.credit_used",
@@ -79,17 +89,5 @@ def underwrite(huma_pool, **kwargs):
         }
     }
     
-
-    
-    # borrower_wallet_address = kwargs["borrowerWalletAddress"]
-    # underwrite_amount = get_credit_total(borrower_wallet_address)
-    
-    # # Create a result dictionary based on the calculated underwrite amount.
-    # result = {
-    #     "creditLimit": int(underwrite_amount),
-    #     "intervalInDays": 30,
-    #     "remainingPeriods": 12,
-    #     "aprInBps": 0
-    # }
     
     return result
