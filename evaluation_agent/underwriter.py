@@ -2,8 +2,10 @@ from typing import Any, Dict, List
 import requests
 import config
 
-def fetch_signal(signal_names: List[str], adapter_inputs: Dict[str, Any]) -> Dict[str, Any]:
+def fetch_signal(signal_names: List[str], adapter_inputs: Dict[str, Any]) -> Dict[str, Any]: 
    """Fetch signals from the decentralized signal portfolio service.
+   THIS FUNCTION GETS SIGNALS FROM THE HUMA SIGNALS SERVICE.
+
    
    For more details about DSP service, see https://github.com/00labs/huma-signals/tree/main/huma_signals
    """
@@ -16,6 +18,8 @@ def fetch_signal(signal_names: List[str], adapter_inputs: Dict[str, Any]) -> Dic
 
 def underwrite(huma_pool, **kwargs):
     """
+    underwrite is a function that assigns the value of the borrowerWalletAddress key in the kwargs dictionary to a variable called borrower_wallet_address and creates a dictionary called result.
+
     The interface function between an EA and Huma EA service
     :param huma_pool: the object that represents huma pool contract
     :param **kwargs
