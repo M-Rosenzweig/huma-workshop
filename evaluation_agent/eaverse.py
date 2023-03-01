@@ -2,7 +2,7 @@ from web3 import Web3
 
 from huma_pool import HumaPool
 
-import underwriter
+import underwriterTribeCredit
 
 
 def evaluation_agent_handler(**kwargs):
@@ -10,7 +10,7 @@ def evaluation_agent_handler(**kwargs):
     wallet_address = kwargs.get("borrowerWalletAddress")
     huma_pool = HumaPool(pool_address)
     
-    result = underwriter.underwrite(huma_pool, **kwargs)
+    result = underwriterTribeCredit.underwrite(huma_pool, **kwargs)
     if result.get("creditLimit"):
         record_approved_credit(wallet_address, huma_pool, result.copy())
     return result

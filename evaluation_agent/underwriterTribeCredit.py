@@ -1,6 +1,7 @@
 from typing import Any, Dict, List
 import requests
 import config
+import json
 from web3 import Web3
 # from dotenv import load_dotenv
 # import os
@@ -8,11 +9,11 @@ from web3 import Web3
 # load_dotenv()
 # provider_url = os.getenv("ALCHEMY_API")
 
-web3 = Web3(Web3.HTTPProvider('https://eth-goerli.g.alchemy.com/v2/yM1fECw7jAe1-aW7ogPyrhcFFYc1zMYT'))
+
 
 # test the connection by getting the latest block number
-latest_block = web3.eth.blockNumber
-print("Latest block number:", latest_block)
+# latest_block = web3.eth.blockNumber
+# print("Latest block number:", latest_block)
 
 
 
@@ -37,13 +38,18 @@ def get_credit_total(borrower_wallet_address: str) -> int:
     :param borrower_wallet_address: The borrower's wallet address.
     :return: The credit limit for the borrower.
     """
+    web3 = Web3(Web3.HTTPProvider('http://localhost:8545'))
+    with open('abi/TribeCredit.json') as f:
+
+
     
     # Connect to the TribeCredit smart contract and retrieve the credit limit.
-    tribe_credit = web3.eth.contract(address=config.tribe_credit_address, abi=config.tribe_credit_abi)
-    credit_limit = tribe_credit.functions.tribeDetails(borrower_wallet_address).call()
+        tribe_credit = web3.eth.contract(address=config.tribe_credit_address, abi= json.load(f))
+        credit_limit = tribe_credit.functions.tribeDetails(borrower_wallet_address).call()
     
     # Calculate the underwrite amount based on the credit limit and return it.
-    underwrite_amount = min(credit_limit * 0.2, 10000)
+    print(credit_limit)
+    underwrite_amount = credit_limit * 0.2
     return underwrite_amount
 
 
@@ -64,30 +70,29 @@ def underwrite(huma_pool, **kwargs):
     # 
     
     # # Creating a result dictionary based on the calculated underwrite amount.
-    # result = {
-    #     "creditLimit": int(underwrite_amount),
-    #     "intervalInDays": 30,
-    #     "remainingPeriods": 12,
-    #     "aprInBps": 0
-    # }
-
-    signal_names = [
-        "TribeCredit.credit_total",
-        "TribeCredit.credit_used",
-        "TribeCredit.credit_available",
-    ]
-
-    adapter_inputs = {"borrower_wallet_address": borrower_wallet_address}
-
-    signals = fetch_signal(signal_names, adapter_inputs)
-    if signals.get("TribeCredit.credit_total") is > 0: {
-        result = {
+    result = {
         "creditLimit": int(underwrite_amount),
         "intervalInDays": 30,
         "remainingPeriods": 12,
         "aprInBps": 0
-        }
     }
+
+    # signal_names = [
+    #     "TribeCredit.credit_total",
+    #     # "TribeCredit.credit_available",
+    # ]
+
+    # adapter_inputs = {"borrower_wallet_address": borrower_wallet_address}
+
+    # signals = fetch_signal(signal_names, adapter_inputs)
+    # if signals.get("TribeCredit.credit_total") is > 0: {
+    #     result = {
+    #     "creditLimit": int(underwrite_amount),
+    #     "intervalInDays": 30,
+    #     "remainingPeriods": 12,
+    #     "aprInBps": 0
+    #     }
+    # }
     
     
     return result
